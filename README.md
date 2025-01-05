@@ -1,2 +1,2 @@
 # WebpageStandard
-This ia a Webpage about the word "Standard". 
+This ia a webpage about the word "Standard". 
