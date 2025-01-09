@@ -89,6 +89,9 @@ body {
     cursor: pointer;
     padding: 0.5rem;
     transition: transform var(--transition-speed);
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    -webkit-user-select: none;
 }
 
 .menu-button:hover {
@@ -341,6 +344,9 @@ ul {
     cursor: pointer;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
     transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    -webkit-user-select: none;
 }
 
 #navButton:active {
@@ -381,18 +387,20 @@ ul {
     margin: 2px 0;
     transition: transform 0.3s ease, opacity 0.3s ease;
     border-radius: 5px;
+    position: relative;
 }
 
 #navButton.open .line1 {
-    transform: rotate(45deg) scale(0.5);
+    transform: translateY(6px) rotate(45deg);
 }
 
 #navButton.open .line2 {
     opacity: 0;
+    transform: translateX(-20px);
 }
 
 #navButton.open .line3 {
-    transform: rotate(-45deg) scale(0.5);
+    transform: translateY(-6px) rotate(-45deg);
 }
 
 #navButton.open .line1,
@@ -411,7 +419,7 @@ ul {
     background-color: #fff;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
     border-radius: 10px;
-    padding: 10px 0;
+    padding: 0.5rem 0;
     transition: opacity 0.3s ease, transform 0.3s ease;
     opacity: 0;
     pointer-events: none;
@@ -427,7 +435,7 @@ ul {
 #bottomNav ul {
     list-style: none;
     margin: 0;
-    padding: 0;
+    padding: 0.25rem;
     text-align: center;
 }
 
@@ -441,13 +449,28 @@ ul {
     text-decoration: none;
     transition: all var(--transition-speed);
     border-radius: var(--card-radius);
-    margin-bottom: 0.5rem;
+    margin: 0.25rem 0.75rem;
+    padding: 0.75rem 1rem;
     position: relative;
     overflow: hidden;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
 }
 
 #bottomNav a:hover {
     background: var(--secondary-bg);
+}
+
+#bottomNav a.active {
+    background: var(--accent-color);
+    color: #ffffff;
+    transform: translateX(5px);
+    padding: 1rem;
+    margin: 0.5rem 0.75rem;
+}
+
+#bottomNav a.active:hover {
+    background: var(--accent-color);
 }
 
 .opinion-text {
@@ -527,4 +550,61 @@ ul {
 .bottomNav a.active {
     background: var(--accent-color);
     color: #ffffff;
+}
+
+@media (min-width: 769px) {
+    .nav-link {
+        -webkit-tap-highlight-color: initial;
+        user-select: text;
+        -webkit-user-select: text;
+    }
+}
+
+#bottomNav a.active {
+    background: var(--accent-color);
+    color: #ffffff;
+    transform: translateX(5px);
+}
+
+#bottomNav a.active:hover {
+    background: var(--accent-color);
+}
+
+@media (min-width: 769px) {
+    #bottomNav a.active {
+        background: none;
+        color: var(--text-color);
+        transform: none;
+        padding: 0.75rem 1rem;
+        margin: 0.25rem 0.75rem;
+    }
+}
+
+.line2 {
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    transform-origin: right;
+    transform: translateX(0);
+    opacity: 1;
+}
+
+#navButton.open .line2 {
+    opacity: 0;
+    transform: translateX(-20px);
+}
+
+#navButton:not(.open) .line2 {
+    transform: translateX(20px);
+    opacity: 0;
+    animation: slideFromRight 0.3s ease forwards;
+}
+
+@keyframes slideFromRight {
+    from {
+        transform: translateX(20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
 }

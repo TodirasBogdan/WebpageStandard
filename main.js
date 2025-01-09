@@ -9,27 +9,43 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function setActiveLink() {
         const scrollPosition = window.scrollY + window.innerHeight;
+        const bottomNavLinks = document.querySelectorAll('#bottomNav a');
+
+        let maxVisibleHeight = 0;
+        let mostVisibleSectionIndex = 0;
 
         sections.forEach((section, index) => {
-            const sectionTop = section.offsetTop;
-            const sectionHeight = section.clientHeight;
-            const correspondingLink = navLinks[index];
-
-            if (index === sections.length - 2 && scrollPosition >= sectionTop) {
-                navLinks.forEach(link => link.classList.remove('active'));
-                correspondingLink.classList.add('active');
-            }
-
-            if (index === sections.length - 1 && scrollPosition >= sectionTop + sectionHeight - 50) {
-                navLinks.forEach(link => link.classList.remove('active'));
-                correspondingLink.classList.add('active');
-            }
-
-            if (index < sections.length - 2 && scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
-                navLinks.forEach(link => link.classList.remove('active'));
-                correspondingLink.classList.add('active');
+            const rect = section.getBoundingClientRect();
+            const visibleHeight = Math.min(rect.bottom, window.innerHeight) - Math.max(rect.top, 0);
+            
+            if (visibleHeight > maxVisibleHeight) {
+                maxVisibleHeight = visibleHeight;
+                mostVisibleSectionIndex = index;
             }
         });
+
+        const secondToLastSection = sections[sections.length - 2];
+        const lastSection = sections[sections.length - 1];
+        const secondToLastTop = secondToLastSection.offsetTop;
+        const lastSectionTop = lastSection.offsetTop;
+        const lastSectionHeight = lastSection.clientHeight;
+
+        navLinks.forEach(link => link.classList.remove('active'));
+
+        if (scrollPosition >= lastSectionTop + lastSectionHeight - 50) {
+            navLinks[sections.length - 1].classList.add('active');
+        } else if (scrollPosition >= secondToLastTop && mostVisibleSectionIndex >= sections.length - 2) {
+            navLinks[sections.length - 2].classList.add('active');
+        } else {
+            if (mostVisibleSectionIndex < sections.length - 2) {
+                navLinks[mostVisibleSectionIndex].classList.add('active');
+            }
+        }
+
+        if (window.innerWidth <= 768) {
+            bottomNavLinks.forEach(link => link.classList.remove('active'));
+            bottomNavLinks[mostVisibleSectionIndex].classList.add('active');
+        }
     }
 
     window.addEventListener('scroll', setActiveLink);
@@ -82,9 +98,60 @@ document.addEventListener('DOMContentLoaded', () => {
 
     navButton.addEventListener('click', () => {
         bottomNav.classList.toggle('visible');
+        navButton.classList.toggle('open');
         navButton.setAttribute('aria-expanded', bottomNav.classList.contains('visible'));
-        const topNavbar = document.querySelector('.top-navbar');
-        topNavbar.classList.toggle('hidden', bottomNav.classList.contains('visible'));
+    });
+
+    document.addEventListener('scroll', () => {
+        if (bottomNav.classList.contains('visible')) {
+            bottomNav.classList.remove('visible');
+            navButton.classList.remove('open');
+            navButton.setAttribute('aria-expanded', 'false');
+        }
+    });
+
+    document.addEventListener('click', (e) => {
+        if (bottomNav.classList.contains('visible') && 
+            !bottomNav.contains(e.target) && 
+            !navButton.contains(e.target)) {
+            bottomNav.classList.remove('visible');
+            navButton.classList.remove('open');
+            navButton.setAttribute('aria-expanded', 'false');
+        }
+    });
+
+    document.addEventListener('touchstart', (e) => {
+        if (bottomNav.classList.contains('visible') && 
+            !bottomNav.contains(e.target) && 
+            !navButton.contains(e.target)) {
+            bottomNav.classList.remove('visible');
+            navButton.classList.remove('open');
+            navButton.setAttribute('aria-expanded', 'false');
+        }
+    });
+
+    const bottomNavLinks = document.querySelectorAll('#bottomNav a');
+    
+    bottomNavLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const targetId = link.getAttribute('href');
+            const targetElement = document.querySelector(targetId);
+            
+            bottomNav.classList.remove('visible');
+            navButton.classList.remove('open');
+            navButton.setAttribute('aria-expanded', 'false');
+
+            targetElement.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+
+
+            setTimeout(() => {
+                setActiveLink();
+            }, 500);
+        });
     });
 
     setActiveLink();
